@@ -94,6 +94,8 @@ while True:
 				player.play()
 			else:
 				print("There is no previous song")
+				player.play()
+				state = 1
 		else:
 			print("Not recognized as 1 of the commands, Please try again")
 			if state == 1: player.play()
