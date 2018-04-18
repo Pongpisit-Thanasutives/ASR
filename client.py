@@ -57,7 +57,7 @@ class MyClient(WebSocketClient):
             with self.audiofile as audiostream:
                 for block in iter(lambda: audiostream.read(self.byterate/4), ""):
                     self.send_data(block)
-            print >> sys.stderr, "Audio sent, now sending EOS"
+            # print >> sys.stderr, "Audio sent, now sending EOS"
             self.send("EOS")
 
         t = threading.Thread(target=send_data_to_ws)
@@ -74,12 +74,12 @@ class MyClient(WebSocketClient):
                 if response['result']['final']:
                     #print >> sys.stderr, trans,
                     self.final_hyps.append(trans)
-                    print >> sys.stderr, '\r%s' % trans.replace("\n", "\\n")
+                    # print >> sys.stderr, '\r%s' % trans.replace("\n", "\\n")
                 else:
                     print_trans = trans.replace("\n", "\\n")
                     if len(print_trans) > 80:
                         print_trans = "... %s" % print_trans[-76:]
-                    print >> sys.stderr, '\r%s' % print_trans,
+                    # print >> sys.stderr, '\r%s' % print_trans,
             if 'adaptation_state' in response:
                 if self.save_adaptation_state_filename:
                     print >> sys.stderr, "Saving adaptation state to %s" % self.save_adaptation_state_filename
@@ -100,7 +100,7 @@ class MyClient(WebSocketClient):
         self.final_hyp_queue.put(" ".join(self.final_hyps))
 
 
-def main():
+def getRecongnizedString():
 
     parser = argparse.ArgumentParser(description='Command line client for kaldigstserver')
     parser.add_argument('-u', '--uri', default="ws://localhost:8888/client/ws/speech", dest="uri", help="Server websocket URI")
@@ -115,14 +115,13 @@ def main():
     if content_type == '' and args.audiofile.name.endswith(".raw"):
         content_type = "audio/x-raw, layout=(string)interleaved, rate=(int)%d, format=(string)S16LE, channels=(int)1" %(args.rate/2)
 
-
-
     ws = MyClient(args.audiofile, args.uri + '?%s' % (urllib.urlencode([("content-type", content_type)])), byterate=args.rate,
                   save_adaptation_state_filename=args.save_adaptation_state, send_adaptation_state_filename=args.send_adaptation_state)
     ws.connect()
     result = ws.get_full_hyp()
-    print result.encode('utf-8')
+    return result.encode('utf-8')
 
+# python client.py -u ws://localhost:8080/client/ws/speech -r 32000 <testfile>.wav
 if __name__ == "__main__":
-    main()
-    
+    print getRecongnizedString()
+    # sys.stdout.write(res[0] + res[1])
