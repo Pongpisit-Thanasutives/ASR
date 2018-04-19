@@ -64,12 +64,13 @@ while True:
 					trans = result.decode('utf-8').replace('\n', '')
 					if len(trans) != 0: break
 			all_result[i] = trans
-			if i > 0:
+			if i != 0:
 				try:
 					if mode(all_result[0:(i+1)]) != '':
 						command = statistics.mode(all_result).split('.')[0]
 				except statistics.StatisticsError:
-					command = all_result[2].split('.')[0]
+					if i == 2: pass
+					else: command = all_result[2].split('.')[0]
 				break
 
 		if command != '':
