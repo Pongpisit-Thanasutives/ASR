@@ -6,7 +6,7 @@ import tty
 import termios
 from random import randint
 import speech_recognition as sr
-import statistics 
+from statistics import mode, StatisticsError
 
 # Set up
 r = sr.Recognizer()
@@ -63,12 +63,14 @@ while True:
 				if result: 
 					trans = result.decode('utf-8').replace('\n', '')
 					if len(trans) != 0: break
+			print(i, trans)
 			all_result[i] = trans
+			print(all_result)
 			if i != 0:
 				try:
-					if mode(all_result[0:(i+1)]) != '':
-						command = statistics.mode(all_result).split('.')[0]
-				except statistics.StatisticsError:
+					if mode(all_result) != '':
+						command = mode(all_result).split('.')[0]
+				except StatisticsError:
 					if i == 2: pass
 					else: command = all_result[2].split('.')[0]
 				break

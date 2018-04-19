@@ -86,10 +86,10 @@ class MyClient(WebSocketClient):
                     with open(self.save_adaptation_state_filename, "w") as f:
                         f.write(json.dumps(response['adaptation_state']))
         else:
-            print >> sys.stderr, "Received error from server (status %d)" % response['status']
-            if 'message' in response:
-                print >> sys.stderr, "Error message:",  response['message']
-
+            # print >> sys.stderr, "Received error from server (status %d)" % response['status']
+            # if 'message' in response:
+            #     print >> sys.stderr, "Error message:",  response['message']
+            pass
 
     def get_full_hyp(self, timeout=90):
         return self.final_hyp_queue.get(timeout)
@@ -101,7 +101,6 @@ class MyClient(WebSocketClient):
 
 
 def main():
-
     parser = argparse.ArgumentParser(description='Command line client for kaldigstserver')
     parser.add_argument('-u', '--uri', default="ws://localhost:8888/client/ws/speech", dest="uri", help="Server websocket URI")
     parser.add_argument('-r', '--rate', default=32000, dest="rate", type=int, help="Rate in bytes/sec at which audio should be sent to the server. NB! For raw 16-bit audio it must be 2*samplerate!")
