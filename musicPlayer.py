@@ -33,6 +33,7 @@ print("Welcome to Dj Kaldi music player")
 print("Press spacebar to a input command")
 
 origin_settings = termios.tcgetattr(sys.stdin)
+
 while True:
 	tty.setraw(sys.stdin)
 	x = 0
@@ -49,6 +50,7 @@ while True:
 	with sr.Microphone(sample_rate = 16000) as source:
 		print('\nListening. . .')
 		audio = r.listen(source)
+		
 	try:
 		with open("microphone-results.wav", "wb") as f:
 			f.write(audio.get_wav_data())
