@@ -7,7 +7,6 @@ import termios
 from random import randint
 import speech_recognition as sr
 import statistics 
-from statistics import mode
 
 # Set up
 r = sr.Recognizer()
@@ -50,7 +49,7 @@ while True:
 	with sr.Microphone(sample_rate = 16000) as source:
 		print('\nListening. . .')
 		audio = r.listen(source)
-		
+
 	try:
 		with open("microphone-results.wav", "wb") as f:
 			f.write(audio.get_wav_data())
@@ -68,7 +67,7 @@ while True:
 			if i > 0:
 				try:
 					if mode(all_result[0:(i+1)]) != '':
-						command = mode(all_result).split('.')[0]
+						command = statistics.mode(all_result).split('.')[0]
 				except statistics.StatisticsError:
 					command = all_result[2].split('.')[0]
 				break
