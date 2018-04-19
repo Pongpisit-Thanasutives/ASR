@@ -11,21 +11,21 @@ decoder:
     mfcc-config : opt/models/newmodel/conf/mfcc_out.conf
     ivector-extraction-config : opt/models/newmodel/conf/ivector_extractor_out.conf
     max-active: 10000
-    beam: 15.0
+    beam: 10.0
     lattice-beam: 6.0
-    acoustic-scale: 0.05555555555
+    acoustic-scale: 0.01086956521 
     do-endpointing : true
- #   endpoint-silence-phones : "1:2:3:4:5:6:7:8:9:10"
+    # endpoint-silence-phones : "1:2:3:4:5:6:7:8:9:10"
     endpoint-silence-phones : "1:2:3:4:5"
     traceback-period-in-secs: 0.25
     chunk-length-in-secs: 0.25
-    num-nbest: 5
+    num-nbest: 3
     #Additional functionality that you can play with:
     #lm-fst:  test/models/english/tedlium_nnet_ms_sp_online/G.fst
     #big-lm-const-arpa: test/models/english/tedlium_nnet_ms_sp_online/G.carpa
     #phone-syms: test/models/english/tedlium_nnet_ms_sp_online/phones.txt
     #word-boundary-file: test/models/english/tedlium_nnet_ms_sp_online/word_boundary.int
-    #do-phone-alignment: true
+    do-phone-alignment: false
 out-dir: tmp
 
 use-vad: False
