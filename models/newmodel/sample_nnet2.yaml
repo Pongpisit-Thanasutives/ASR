@@ -13,19 +13,19 @@ decoder:
     max-active: 10000
     beam: 10.0
     lattice-beam: 6.0
-    acoustic-scale: 0.01086956521 
+    acoustic-scale: 0.01785714285
     do-endpointing : true
-    # endpoint-silence-phones : "1:2:3:4:5:6:7:8:9:10"
-    endpoint-silence-phones : "1:2:3:4:5"
+    endpoint-silence-phones : "1:2:3:4:5:6:7:8:9:10"
+    # endpoint-silence-phones : "1:2:3:4:5"
     traceback-period-in-secs: 0.25
     chunk-length-in-secs: 0.25
-    num-nbest: 3
+    num-nbest: 10
     #Additional functionality that you can play with:
     #lm-fst:  test/models/english/tedlium_nnet_ms_sp_online/G.fst
     #big-lm-const-arpa: test/models/english/tedlium_nnet_ms_sp_online/G.carpa
     #phone-syms: test/models/english/tedlium_nnet_ms_sp_online/phones.txt
     #word-boundary-file: test/models/english/tedlium_nnet_ms_sp_online/word_boundary.int
-    do-phone-alignment: false
+    #do-phone-alignment: true
 out-dir: tmp
 
 use-vad: False

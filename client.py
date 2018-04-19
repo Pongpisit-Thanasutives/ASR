@@ -74,7 +74,7 @@ class MyClient(WebSocketClient):
                 if response['result']['final']:
                     #print >> sys.stderr, trans,
                     self.final_hyps.append(trans)
-                    # print >> sys.stderr, '\r%s' % trans.replace("\n", "\\n")
+                    #print >> sys.stderr, '\r%s' % trans.replace("\n", "\\n")
                 else:
                     print_trans = trans.replace("\n", "\\n")
                     if len(print_trans) > 80:
@@ -91,7 +91,7 @@ class MyClient(WebSocketClient):
                 print >> sys.stderr, "Error message:",  response['message']
 
 
-    def get_full_hyp(self, timeout=60):
+    def get_full_hyp(self, timeout=90):
         return self.final_hyp_queue.get(timeout)
 
     def closed(self, code, reason=None):
@@ -100,7 +100,7 @@ class MyClient(WebSocketClient):
         self.final_hyp_queue.put(" ".join(self.final_hyps))
 
 
-def getRecongnizedString():
+def main():
 
     parser = argparse.ArgumentParser(description='Command line client for kaldigstserver')
     parser.add_argument('-u', '--uri', default="ws://localhost:8888/client/ws/speech", dest="uri", help="Server websocket URI")
@@ -119,9 +119,8 @@ def getRecongnizedString():
                   save_adaptation_state_filename=args.save_adaptation_state, send_adaptation_state_filename=args.send_adaptation_state)
     ws.connect()
     result = ws.get_full_hyp()
-    return result.encode('utf-8')
+    print result.encode('utf-8')
 
 # python client.py -u ws://localhost:8080/client/ws/speech -r 32000 <testfile>.wav
 if __name__ == "__main__":
-    print getRecongnizedString()
-    # sys.stdout.write(res[0] + res[1])
+    main()
