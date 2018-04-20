@@ -7,6 +7,7 @@ import termios
 from random import randint
 import speech_recognition as sr
 from statistics import mode, StatisticsError
+import rec
 
 # Set up
 r = sr.Recognizer()
@@ -45,83 +46,77 @@ while True:
 	termios.tcsetattr(sys.stdin, termios.TCSADRAIN, origin_settings)
 	
 	if state != 2: player.pause()
-	
-	with sr.Microphone(sample_rate = 16000) as source:
-		print('\nListening. . .')
-		audio = r.listen(source)
 
-	try:
-		with open("microphone-results.wav", "wb") as f:
-			f.write(audio.get_wav_data())
-		
-		# Find what the command was ?
-		command = ''
-		all_result = ['', '', '']
-		for i in range(3):
-			while True:
-				result = subprocess.check_output(["/usr/local/opt/python/bin/python2.7", "client.py", "-u", "ws://localhost:8080/client/ws/speech", "-r", "32000", "microphone-results.wav"])
-				if result: 
-					trans = result.decode('utf-8').replace('\n', '')
-					if len(trans) != 0: break
-			print(i, trans)
-			all_result[i] = trans
-			print(all_result)
-			if i != 0:
-				try:
-					if mode(all_result) != '':
-						command = mode(all_result).split('.')[0]
-				except StatisticsError:
-					if i == 2: pass
-					else: command = all_result[2].split('.')[0]
-				break
+	rec.record()
 
-		if command != '':
-			print("Perform task: " + command)
-			if command == kor:
-				if state == 0:
-					player.play()
-					state = 1
+	command = ''
+	all_result = ['', '', '']
+	for i in range(3):
+		c = 0
+		while True:
+			result = subprocess.check_output(["/usr/local/opt/python/bin/python2.7", "client.py", "-u", "ws://localhost:8080/client/ws/speech", "-r", "32000", "microphone-results.wav"])
+			if result: 
+				trans = result.decode('utf-8').replace('\n', '').split('.')[0]
+				if trans != '': 
+					c += 1
+					break
+			if c == 4:break
+		if c == 4:
+			command = ''
+			break
 
-				elif state == 1:
-					player.stop()
+		print(trans)
+		all_result[i] = trans
+		print(all_result)
+		if all_result[1] == all_result[0]:
+			command = all_result[0]
+			break
+		if all_result[2] != '' and (all_result[2] == all_result[1] or all_result[2] == all_result[0]):
+			command = all_result[2]			
+
+	if command != '':
+		print("Perform task: " + command)
+		if command == kor:
+			if state == 0:
+				player.play()
+				state = 1
+
+			elif state == 1:
+				player.stop()
+				next_rnd = randint(0, numSongs - 1)
+				while(next_rnd == history[now]):
 					next_rnd = randint(0, numSongs - 1)
-					while(next_rnd == history[now]):
-						next_rnd = randint(0, numSongs - 1)
-					history.append(next_rnd)
-					now += 1
+				history.append(next_rnd)
+				now += 1
 
-					song = path + '/' + songs[history[now]]
-					player = vlc.MediaPlayer(song)
-					player.play()
+				song = path + '/' + songs[history[now]]
+				player = vlc.MediaPlayer(song)
+				player.play()
 
-				elif state == 2:
-					player.play()
-					state = 1
+			elif state == 2:
+				player.play()
+				state = 1
 
-			elif command == stop:
-				print("pause the song")
-				state = 2
+		elif command == stop:
+			print("pause the song")
+			state = 2
 
-			elif command == back:
-				if now != 0:
-					print("back to the previous song")
-					player.stop()
-					player = vlc.MediaPlayer(path + '/' + songs[history[now - 1]])
-					history = history[:now]
-					now -= 1
-					player.play()
-				else:
-					print("There is no previous song")
-					player.play()
-					state = 1
+		elif command == back:
+			if now != 0:
+				print("back to the previous song")
+				player.stop()
+				player = vlc.MediaPlayer(path + '/' + songs[history[now - 1]])
+				history = history[:now]
+				now -= 1
+				player.play()
 			else:
-				print("Not recognized as 1 of the commands or not sure, Please try again")
-				if state == 1: player.play()
+				print("There is no previous song")
+				player.play()
+				state = 1
 		else:
-			print("Please try again")
-
-	except sr.RequestError as e:
-  		print("Could not understand audio, continue playing. . .")
-  		player.play()
+			print("Not recognized as 1 of the commands or not sure, Please try again")
+			if state == 1: player.play()
+	else:
+		print("Please try again")
   		
 termios.tcsetattr(sys.stdin, termios.TCSADRAIN, origin_settings)

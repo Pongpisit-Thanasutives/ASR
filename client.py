@@ -10,7 +10,7 @@ import Queue
 import json
 import time
 import os
-
+from math import exp
 def rate_limited(maxPerSecond):
     minInterval = 1.0 / float(maxPerSecond)
     def decorate(func):
@@ -73,13 +73,23 @@ class MyClient(WebSocketClient):
                 trans = response['result']['hypotheses'][0]['transcript']
                 if response['result']['final']:
                     #print >> sys.stderr, trans,
-                    self.final_hyps.append(trans)
-                    #print >> sys.stderr, '\r%s' % trans.replace("\n", "\\n")
+                    # self.final_hyps.append(trans)
+                    print >> sys.stderr, '\r%s' % trans.replace("\n", "\\n")
+                    if len(response["result"]["hypotheses"]) > 1:
+                        likelihood1 = response["result"]["hypotheses"][0]["likelihood"]
+                        likelihood2 = response["result"]["hypotheses"][1]["likelihood"]
+                        confidence = likelihood1 - likelihood2
+                        confidence = 1 - exp(-confidence)
+                    else:
+                        confidence = 1.0e+10;
+                    if confidence * 100 > 40:
+                        self.final_hyps.append(trans)
+
                 else:
                     print_trans = trans.replace("\n", "\\n")
                     if len(print_trans) > 80:
                         print_trans = "... %s" % print_trans[-76:]
-                    # print >> sys.stderr, '\r%s' % print_trans,
+                    print >> sys.stderr, '\r%s' % print_trans,
             if 'adaptation_state' in response:
                 if self.save_adaptation_state_filename:
                     print >> sys.stderr, "Saving adaptation state to %s" % self.save_adaptation_state_filename
