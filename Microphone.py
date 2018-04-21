@@ -5,7 +5,7 @@ def record():
 	CHANNELS = 1
 	RATE = 16000
 	CHUNK = 16384
-	RECORD_SECONDS = 2.6
+	RECORD_SECONDS = 2.7
 	WAVE_OUTPUT_FILENAME = "microphone-results.wav"
 	audio = pyaudio.PyAudio()
 	
