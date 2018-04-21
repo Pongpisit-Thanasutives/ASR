@@ -7,7 +7,7 @@ import termios
 from random import randint
 import speech_recognition as sr
 from statistics import mode, StatisticsError
-import rec
+import Microphone
 
 # Set up
 r = sr.Recognizer()
@@ -47,36 +47,26 @@ while True:
 	
 	if state != 2: player.pause()
 
-	rec.record()
+	Microphone.record()
 
 	command = ''
-	all_result = ['', '', '']
-	for i in range(3):
-		c = 0
-		while True:
-			result = subprocess.check_output(["/usr/local/opt/python/bin/python2.7", "client.py", "-u", "ws://localhost:8080/client/ws/speech", "-r", "32000", "microphone-results.wav"])
-			if result: 
-				trans = result.decode('utf-8').replace('\n', '').split('.')[0]
-				if trans != '': 
-					c += 1
-					break
-			if c == 4:break
-		if c == 4:
-			command = ''
-			break
-
-		print(trans)
-		all_result[i] = trans
-		print(all_result)
-		if all_result[1] == all_result[0]:
-			command = all_result[0]
-			break
-		if all_result[2] != '' and (all_result[2] == all_result[1] or all_result[2] == all_result[0]):
-			command = all_result[2]			
+	count_penelties = 0
+	while True:
+		result = subprocess.check_output(["/usr/local/opt/python/bin/python2.7", "newClient.py", "-u", "ws://localhost:8080/client/ws/speech", "-r", "32000", "microphone-results.wav"])
+		if result: 
+			trans = result.decode('utf-8').replace('\n', '').split('.')[0]
+			if trans != '':
+				command = trans
+				break
+			else:
+				count_penelties += 1
+				print(count_penelties)
+				if count_penelties == 3:break
+	# print(count_penelties)
 
 	if command != '':
-		print("Perform task: " + command)
 		if command == kor:
+			print("Perform task: " + command)
 			if state == 0:
 				player.play()
 				state = 1
@@ -98,11 +88,13 @@ while True:
 				state = 1
 
 		elif command == stop:
+			print("Perform task: " + command)
 			print("pause the song")
 			state = 2
 
 		elif command == back:
 			if now != 0:
+				print("Perform task: " + command)
 				print("back to the previous song")
 				player.stop()
 				player = vlc.MediaPlayer(path + '/' + songs[history[now - 1]])
@@ -110,13 +102,15 @@ while True:
 				now -= 1
 				player.play()
 			else:
+				print("Perform task: " + "หยุด เล่น")
 				print("There is no previous song")
-				player.play()
-				state = 1
+				print("pause the song")
+				state = 2
 		else:
 			print("Not recognized as 1 of the commands or not sure, Please try again")
 			if state == 1: player.play()
 	else:
 		print("Please try again")
+		if state == 1: player.play()
   		
 termios.tcsetattr(sys.stdin, termios.TCSADRAIN, origin_settings)

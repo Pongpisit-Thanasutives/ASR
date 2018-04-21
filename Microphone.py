@@ -5,7 +5,7 @@ def record():
 	CHANNELS = 1
 	RATE = 16000
 	CHUNK = 16384
-	RECORD_SECONDS = 2.5
+	RECORD_SECONDS = 2.6
 	WAVE_OUTPUT_FILENAME = "microphone-results.wav"
 	audio = pyaudio.PyAudio()
 	
@@ -33,3 +33,5 @@ def record():
 	waveFile.setframerate(RATE)
 	waveFile.writeframes(b''.join(frames))
 	waveFile.close()
+
+# record()
